@@ -2,12 +2,21 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation"; 
-import { TextField, Button, Box, Typography, Container } from "@mui/material";
+import { useRouter } from "next/navigation";
+import {
+  TextField,
+  Button,
+  Box,
+  Typography,
+  Container,
+  Checkbox,
+  FormControlLabel,
+} from "@mui/material";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [remember, setRemember] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
 
@@ -29,19 +38,37 @@ export default function LoginPage() {
   };
 
   return (
-    <Container maxWidth="xs">
-      <Box sx={{ mt: 8, p: 3, boxShadow: 3, borderRadius: 2, textAlign: "center" }}>
-        <Typography variant="h5" component="h1" gutterBottom>
-          Giriş Yap
+    <Container maxWidth="xs" sx={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh" }}>
+      <Box
+        sx={{
+          width: "100%",
+          p: 4,
+          border: "1px solid #ccc",
+          borderRadius: 2,
+          textAlign: "center",
+        }}
+      >
+        <Typography
+          variant="h4"
+          sx={{
+            fontWeight: "bold",
+            letterSpacing: "4px",
+            mb: 4,
+            color: "#333",
+          }}
+        >
+          LOGO
         </Typography>
+
         {error && (
           <Typography color="error" sx={{ mb: 2 }}>
             {error}
           </Typography>
         )}
+
         <form onSubmit={handleLogin}>
           <TextField
-            label="Kullanıcı Adı"
+            label="E-Posta"
             variant="outlined"
             fullWidth
             margin="normal"
@@ -59,7 +86,28 @@ export default function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={remember}
+                onChange={(e) => setRemember(e.target.checked)}
+              />
+            }
+            label="Beni Hatırla"
+            sx={{ mt: 1, mb: 2, justifyContent: "flex-start", display: "flex" }}
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            fullWidth
+            sx={{
+              backgroundColor: "#000",
+              color: "#fff",
+              "&:hover": {
+                backgroundColor: "#333",
+              },
+            }}
+          >
             Giriş Yap
           </Button>
         </form>

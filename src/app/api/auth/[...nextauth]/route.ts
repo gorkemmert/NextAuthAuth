@@ -1,8 +1,29 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import axios from "axios";
+import { NextAuthOptions } from "next-auth";
 
-export const authOptions = {
+
+declare module "next-auth" {
+  interface User {
+    accessToken: string;
+    refreshToken: string;
+    accessTokenExpires: number;
+  }
+
+  interface Session {
+    accessToken?: string;
+    refreshToken?: string;
+  }
+
+  interface JWT {
+    accessToken?: string;
+    refreshToken?: string;
+    accessTokenExpires?: number;
+  }
+}
+
+export const authOptions: NextAuthOptions  = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -16,14 +37,15 @@ export const authOptions = {
             username: credentials?.username,
             password: credentials?.password,
           });
-
+          
+          
           if (response?.data && response?.data?.data?.accessToken ) {
             return {
               id: response?.data?.userId,
               username: credentials?.username,
               accessToken: response?.data?.data?.accessToken,
               refreshToken: response?.data?.data?.refreshToken,
-              accessTokenExpires: Date.now() + 15 * 60 * 1000, // 15 dakika sonra süresi dolacak
+              accessTokenExpires: Date.now() + 60 * 60 * 1000,
             };
           }
 
@@ -35,8 +57,7 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
-      // İlk girişte kullanıcı verilerini JWT içine kaydediyoruz
+    async jwt({ token, user }: { token: any; user?: any }) {
       if (user) {
         return {
           ...token,
@@ -46,21 +67,22 @@ export const authOptions = {
         };
       }
 
-      // Token süresi dolmuşsa refresh token ile yeniliyoruz
+    
       if (Date.now() > token.accessTokenExpires) {
         try {
           const response = await axios.post(process.env.AUTH_REFRESH_API!, {
             refreshToken: token.refreshToken,
           });
-
-          if (response.data && response.data.token) {
+          console.log("response2", response);
+          if (response.data && response.data.data?.accessToken) {
             return {
               ...token,
-              accessToken: response.data.token,
-              refreshToken: response.data.refreshToken,
-              accessTokenExpires: Date.now() + 15 * 60 * 1000, // Yeni süre
+              accessToken: response.data.data.accessToken,
+              refreshToken: response.data.data.refreshToken,
+              accessTokenExpires: Date.now() + response.data.data.expiresIn * 1000
             };
           }
+          return { ...token, accessToken: null, refreshToken: null };
         } catch (error) {
           console.error("Failed to refresh token", error);
           return { ...token, accessToken: null, refreshToken: null };
@@ -69,13 +91,18 @@ export const authOptions = {
 
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }: { session: any; token: any }) {
+      if (!token?.accessToken) {
+        console.log("Session invalid — redirecting to login.");
+        return null;
+      }
+    
       session.accessToken = token.accessToken;
       session.refreshToken = token.refreshToken;
       return session;
     },
   },
-  session: { strategy: "jwt" },
+  session: { strategy: "jwt", maxAge: 8 * 60 * 60 },
   secret: process.env.NEXTAUTH_SECRET,
 };
 

@@ -1,108 +1,102 @@
 "use client";
 
-import { useSession } from "next-auth/react";
-import { styled, useTheme } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 import Drawer from "@mui/material/Drawer";
-import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import HomeIcon from "@mui/icons-material/Home";
-import SettingsIcon from "@mui/icons-material/Settings";
-import Avatar from "@mui/material/Avatar";
-import Box from "@mui/material/Box";
+import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
+import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import Typography from "@mui/material/Typography";
-import { deepPurple } from "@mui/material/colors";
+import Box from "@mui/material/Box";
 import Link from "next/link";
 
-const drawerWidth = 240;
+const drawerWidth = 260;
 
-const DrawerHeader = styled("div")(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  padding: theme.spacing(0, 1),
-  ...theme.mixins.toolbar,
-  justifyContent: "flex-end",
-}));
-
-interface SidebarProps {
-  open: boolean;
-  handleDrawerClose: () => void;
-}
-
-export default function Sidebar({ open, handleDrawerClose }: SidebarProps) {
-  const theme = useTheme();
-  const { data: session } = useSession();
-
+export default function Sidebar() {
   return (
     <Drawer
+      variant="permanent"
       sx={{
         width: drawerWidth,
         flexShrink: 0,
         "& .MuiDrawer-paper": {
           width: drawerWidth,
           boxSizing: "border-box",
-          backgroundColor: "#111827",
-          color: "white",
+          backgroundColor: "#fff",
+          color: "#000",
+          borderRight: "none"
         },
       }}
-      variant="persistent"
-      anchor="left"
-      open={open}
     >
-      <DrawerHeader>
-        <IconButton sx={{ color: "white" }} onClick={handleDrawerClose}>
-          {theme.direction === "ltr" ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-        </IconButton>
-      </DrawerHeader>
-      <Divider />
-      <Box sx={{ padding: 2, display: "flex", alignItems: "center", flexDirection: "column", marginBottom: 2 }}>
-        <Avatar sx={{ width: 56, height: 56, marginBottom: 1, bgcolor: deepPurple[500] }} />
-        <Typography variant="body1" align="center" sx={{ textAlign: "center" }}>
-          {session?.user?.name || "Misafir"}
+      <Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
+        <Box
+          sx={{
+            px: 3,
+            py: 1,
+            fontWeight: "bold",
+            fontSize: "24px",
+            letterSpacing: "2px",
+            color: "#000",
+          }}
+        >
+          LOGO
+        </Box>
+      </Box>
+      <Box
+        sx={{
+          border: "1px solid #e0e0e0",
+          borderRadius: 2, 
+          overflow: "hidden", 
+          height: "calc(100% - 32px)"
+        }}
+      >
+      <Box sx={{ px: 2, py: 1 }}>
+        <Typography variant="subtitle2" fontWeight="bold" color="text.secondary">
+          MENÜ
         </Typography>
       </Box>
-      <Divider />
+      
       <List>
         <ListItem disablePadding>
-          <Link className="w-full" href="/">
-            <ListItemButton
-              sx={{
-                "&:hover": {
-                  backgroundColor: "#849DB5",
-                },
-              }}
-            >
-              <ListItemIcon sx={{ color: "white" }}>
+          <Link href="/" className="flex w-full">
+            <ListItemButton>
+              <ListItemIcon>
                 <HomeIcon />
               </ListItemIcon>
-              <ListItemText primary={"Ana Sayfa"} />
+              <ListItemText primary="Dashboard" />
             </ListItemButton>
           </Link>
         </ListItem>
+
         <ListItem disablePadding>
-          <Link className="w-full" href="/settings">
-            <ListItemButton
-              sx={{
-                "&:hover": {
-                  backgroundColor: "#849DB5",
-                },
-              }}
-            >
-              <ListItemIcon sx={{ color: "white" }}>
-                <SettingsIcon />
-              </ListItemIcon>
-              <ListItemText primary={"Ayarlar"} />
-            </ListItemButton>
-          </Link>
+          <ListItemButton>
+            <ListItemIcon>
+              <Inventory2OutlinedIcon />
+            </ListItemIcon>
+            <ListItemText primary="Ürünler" />
+          </ListItemButton>
         </ListItem>
       </List>
-      <Divider />
+
+      <Box sx={{ px: 2, pt: 3, pb: 1 }}>
+        <Typography variant="subtitle2" fontWeight="bold" color="text.secondary">
+          Satış
+        </Typography>
+      </Box>
+
+      <Box sx={{ px: 2 }}>
+        <ListItemButton sx={{ border: "1px solid #000", borderRadius: 1 }}>
+          <ListItemIcon>
+            <ShoppingCartOutlinedIcon />
+          </ListItemIcon>
+          <ListItemText primary="Koleksiyon" />
+        </ListItemButton>
+      </Box>
+      </Box>
     </Drawer>
   );
 }

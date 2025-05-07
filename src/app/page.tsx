@@ -17,5 +17,10 @@ export default function HomePage() {
     }
   }, [session, status, router]);
 
+  
+  if (status === "loading") {
+    return null; 
+  }
+
   return <p>Yönlendiriliyor...</p>;
 }

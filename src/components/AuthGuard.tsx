@@ -9,9 +9,13 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    if (status === "loading") return; // Yüklenme sürecinde bekleyelim
-    if (!session) router.push("/login"); // Kullanıcı giriş yapmamışsa login sayfasına yönlendir
+    if (status === "loading") return;
+  
+    if (status === "unauthenticated" || !session) {
+      router.push("/login");
+    }
   }, [session, status, router]);
 
+  
   return <>{children}</>;
 }
